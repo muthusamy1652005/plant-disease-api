@@ -16,233 +16,233 @@ app.add_middleware(
 model = YOLO("best.pt")
 
 disease_solutions = {
-    "Tomato___Early_blight": {
-        "disease": "Tomato Early Blight",
-        "cause": "Alternaria solani fungus",
-        "solution": "Copper-based fungicide spray pannunga. Infected leaves remove pannunga.",
-        "prevention": "Crop rotation pannunga. Over-watering avoid pannunga."
-    },
-    "Tomato___Late_blight": {
-        "disease": "Tomato Late Blight",
-        "cause": "Phytophthora infestans",
-        "solution": "Mancozeb fungicide use pannunga. Affected plants destroy pannunga.",
-        "prevention": "Well-drained soil use pannunga. Air circulation maintain pannunga."
-    },
-    "Tomato___Bacterial_spot": {
-        "disease": "Tomato Bacterial Spot",
-        "cause": "Xanthomonas bacteria",
-        "solution": "Copper bactericide spray pannunga. Infected leaves remove pannunga.",
-        "prevention": "Seed treatment pannunga. Avoid overhead irrigation."
-    },
-    "Tomato___Target_Spot": {
-        "disease": "Tomato Target Spot",
-        "cause": "Corynespora cassiicola fungus",
-        "solution": "Azoxystrobin fungicide spray pannunga.",
-        "prevention": "Proper plant spacing maintain pannunga."
-    },
-    "Tomato___Tomato_mosaic_virus": {
-        "disease": "Tomato Mosaic Virus",
-        "cause": "Tobamovirus",
-        "solution": "Infected plants remove pannunga. No chemical cure.",
-        "prevention": "Virus-free seeds use pannunga. Tools sanitize pannunga."
-    },
-    "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
-        "disease": "Tomato Yellow Leaf Curl Virus",
-        "cause": "Begomovirus (whitefly transmitted)",
-        "solution": "Infected plants remove pannunga. Whitefly control pannunga.",
-        "prevention": "Resistant varieties use pannunga. Insecticide spray pannunga."
-    },
-    "Tomato___Leaf_Mold": {
-        "disease": "Tomato Leaf Mold",
-        "cause": "Passalora fulva fungus",
-        "solution": "Chlorothalonil fungicide spray pannunga.",
-        "prevention": "Humidity reduce pannunga. Good ventilation maintain pannunga."
-    },
-    "Tomato___Septoria_leaf_spot": {
-        "disease": "Tomato Septoria Leaf Spot",
-        "cause": "Septoria lycopersici fungus",
-        "solution": "Mancozeb or copper fungicide spray pannunga.",
-        "prevention": "Crop rotation pannunga. Mulching use pannunga."
-    },
-    "Tomato___Spider_mites Two-spotted_spider_mite": {
-        "disease": "Tomato Spider Mites",
-        "cause": "Tetranychus urticae mite",
-        "solution": "Miticide or neem oil spray pannunga.",
-        "prevention": "Regular water spray pannunga. Natural predators encourage pannunga."
-    },
-    "Tomato___healthy": {
-        "disease": "Healthy Tomato",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
-    "Potato___Early_blight": {
-        "disease": "Potato Early Blight",
-        "cause": "Alternaria solani fungus",
-        "solution": "Chlorothalonil fungicide use pannunga.",
-        "prevention": "Crop rotation pannunga. Proper spacing maintain pannunga."
-    },
-    "Potato___Late_blight": {
-        "disease": "Potato Late Blight",
-        "cause": "Phytophthora infestans",
-        "solution": "Metalaxyl fungicide spray pannunga. Infected plants burn pannunga.",
-        "prevention": "Resistant varieties use pannunga."
-    },
-    "Potato___healthy": {
-        "disease": "Healthy Potato",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
-    "Grape___Black_rot": {
-        "disease": "Grape Black Rot",
-        "cause": "Guignardia bidwellii fungus",
-        "solution": "Myclobutanil fungicide spray pannunga. Infected fruits remove pannunga.",
-        "prevention": "Pruning properly pannunga. Humidity control pannunga."
-    },
-    "Grape___Esca_(Black_Measles)": {
-        "disease": "Grape Esca Black Measles",
-        "cause": "Fungal complex (Phaeomoniella)",
-        "solution": "Infected wood prune pannunga. Wound sealant use pannunga.",
-        "prevention": "Pruning wounds protect pannunga."
-    },
-    "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)": {
-        "disease": "Grape Leaf Blight",
-        "cause": "Isariopsis clavispora fungus",
-        "solution": "Copper fungicide spray pannunga.",
-        "prevention": "Good air circulation maintain pannunga."
-    },
-    "Grape___healthy": {
-        "disease": "Healthy Grape",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
-    "Strawberry___Leaf_scorch": {
-        "disease": "Strawberry Leaf Scorch",
-        "cause": "Diplocarpon earlianum fungus",
-        "solution": "Captan fungicide spray pannunga. Old leaves remove pannunga.",
-        "prevention": "Certified disease-free plants use pannunga."
-    },
-    "Strawberry___healthy": {
-        "disease": "Healthy Strawberry",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
-    "Corn_(maize)___Common_rust_": {
-        "disease": "Corn Common Rust",
-        "cause": "Puccinia sorghi fungus",
-        "solution": "Triazole fungicide spray pannunga.",
-        "prevention": "Resistant hybrid seeds use pannunga."
-    },
-    "Corn_(maize)___Northern_Leaf_Blight": {
-        "disease": "Corn Northern Leaf Blight",
-        "cause": "Exserohilum turcicum fungus",
-        "solution": "Propiconazole fungicide spray pannunga.",
-        "prevention": "Resistant varieties use pannunga. Crop rotation pannunga."
-    },
-    "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot": {
-        "disease": "Corn Gray Leaf Spot",
-        "cause": "Cercospora zeae-maydis fungus",
-        "solution": "Strobilurin fungicide spray pannunga.",
-        "prevention": "Crop rotation pannunga. Tillage practices follow pannunga."
-    },
-    "Corn_(maize)___healthy": {
-        "disease": "Healthy Corn",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
     "Apple___Apple_scab": {
-        "disease": "Apple Scab",
-        "cause": "Venturia inaequalis fungus",
-        "solution": "Captan or mancozeb fungicide spray pannunga.",
-        "prevention": "Fallen leaves destroy pannunga. Resistant varieties use pannunga."
+        "disease": "ஆப்பிள் ஸ்கேப் நோய்",
+        "cause": "வென்டூரியா இனேக்வாலிஸ் என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "காப்டன் அல்லது மேன்கோசெப் பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட இலைகளை அழிக்கவும்.",
+        "prevention": "உதிர்ந்த இலைகளை அழிக்கவும். நோய் எதிர்ப்பு ரகங்களை பயன்படுத்தவும்."
     },
     "Apple___Black_rot": {
-        "disease": "Apple Black Rot",
-        "cause": "Botryosphaeria obtusa fungus",
-        "solution": "Captan fungicide spray pannunga. Infected branches prune pannunga.",
-        "prevention": "Dead wood remove pannunga regularly."
+        "disease": "ஆப்பிள் கருப்பு அழுகல் நோய்",
+        "cause": "போட்ரியோஸ்பேரியா ஒப்டுசா என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "காப்டன் பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட கிளைகளை கத்தரிக்கவும்.",
+        "prevention": "இறந்த மரக்கட்டைகளை தொடர்ந்து நீக்கவும். நல்ல காற்றோட்டம் பராமரிக்கவும்."
     },
     "Apple___Cedar_apple_rust": {
-        "disease": "Apple Cedar Rust",
-        "cause": "Gymnosporangium juniperi-virginianae",
-        "solution": "Myclobutanil fungicide spray pannunga.",
-        "prevention": "Nearby juniper trees remove pannunga."
+        "disease": "ஆப்பிள் சிடார் துரு நோய்",
+        "cause": "ஜிம்னோஸ்போரன்ஜியம் என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "மைக்லோபுடானில் பூஞ்சைக்கொல்லி தெளிக்கவும். வசந்த காலத்தில் சிகிச்சை அளிக்கவும்.",
+        "prevention": "அருகில் உள்ள ஜூனிபர் மரங்களை அகற்றவும். நோய் எதிர்ப்பு ஆப்பிள் ரகங்களை பயன்படுத்தவும்."
     },
     "Apple___healthy": {
-        "disease": "Healthy Apple",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
-    "Cherry_(including_sour)___Powdery_mildew": {
-        "disease": "Cherry Powdery Mildew",
-        "cause": "Podosphaera clandestina fungus",
-        "solution": "Sulfur or potassium bicarbonate spray pannunga.",
-        "prevention": "Good air circulation maintain pannunga."
-    },
-    "Cherry_(including_sour)___healthy": {
-        "disease": "Healthy Cherry",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
-    "Peach___Bacterial_spot": {
-        "disease": "Peach Bacterial Spot",
-        "cause": "Xanthomonas arboricola bacteria",
-        "solution": "Copper bactericide spray pannunga.",
-        "prevention": "Resistant varieties use pannunga."
-    },
-    "Peach___healthy": {
-        "disease": "Healthy Peach",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
-    "Pepper,_bell___Bacterial_spot": {
-        "disease": "Pepper Bacterial Spot",
-        "cause": "Xanthomonas campestris bacteria",
-        "solution": "Copper fungicide spray pannunga. Infected plants remove pannunga.",
-        "prevention": "Certified seeds use pannunga."
-    },
-    "Pepper,_bell___healthy": {
-        "disease": "Healthy Pepper",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
-    "Squash___Powdery_mildew": {
-        "disease": "Squash Powdery Mildew",
-        "cause": "Podosphaera xanthii fungus",
-        "solution": "Neem oil or sulfur spray pannunga.",
-        "prevention": "Proper spacing maintain pannunga."
-    },
-    "Raspberry___healthy": {
-        "disease": "Healthy Raspberry",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
-    "Soybean___healthy": {
-        "disease": "Healthy Soybean",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
-    },
-    "Orange___Haunglongbing_(Citrus_greening)": {
-        "disease": "Citrus Greening HLB",
-        "cause": "Candidatus Liberibacter bacteria",
-        "solution": "No cure. Infected trees remove pannunga.",
-        "prevention": "Psyllid insect control pannunga. Certified trees use pannunga."
+        "disease": "ஆப்பிள் செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும். நல்ல விவசாய முறைகளை பின்பற்றவும்."
     },
     "Blueberry___healthy": {
-        "disease": "Healthy Blueberry",
-        "cause": "No disease",
-        "solution": "No treatment needed!",
-        "prevention": "Regular monitoring continue pannunga."
+        "disease": "ப்ளூபெர்ரி செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும். சரியான கத்தரிப்பு செய்யவும்."
+    },
+    "Cherry_(including_sour)___Powdery_mildew": {
+        "disease": "செர்ரி பொடி பூஞ்சை நோய்",
+        "cause": "போடோஸ்பேரா க்ளான்டஸ்டினா என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "கந்தகம் அல்லது பொட்டாசியம் பை கார்பனேட் தெளிக்கவும். பாதிக்கப்பட்ட தளிர்களை அகற்றவும்.",
+        "prevention": "நல்ல காற்றோட்டம் பராமரிக்கவும். தலை வழியாக நீர் பாய்ச்சுவதை தவிர்க்கவும்."
+    },
+    "Cherry_(including_sour)___healthy": {
+        "disease": "செர்ரி செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும்."
+    },
+    "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot": {
+        "disease": "மக்காச்சோளம் சாம்பல் இலை புள்ளி நோய்",
+        "cause": "சர்கோஸ்போரா ஜீ-மேடிஸ் என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "ஸ்ட்ரோபிலுரின் பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட இலைகளை அகற்றவும்.",
+        "prevention": "பயிர் சுழற்சி கடைப்பிடிக்கவும். நிலத்தை உழவு செய்யவும்."
+    },
+    "Corn_(maize)___Common_rust_": {
+        "disease": "மக்காச்சோளம் சாதாரண துரு நோய்",
+        "cause": "புக்சினியா சோர்கி என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "ட்ரையசோல் பூஞ்சைக்கொல்லி தெளிக்கவும். முன்கூட்டிய கண்டறிதல் முக்கியம்.",
+        "prevention": "நோய் எதிர்ப்பு கலப்பின விதைகளை பயன்படுத்தவும். முன்கூட்டியே நடவு செய்யவும்."
+    },
+    "Corn_(maize)___Northern_Leaf_Blight": {
+        "disease": "மக்காச்சோளம் வடக்கு இலை கருகல் நோய்",
+        "cause": "எக்ஸ்செரோஹிலம் டர்சிகம் என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "புரோபிகோனசோல் பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட தாவர கழிவுகளை அழிக்கவும்.",
+        "prevention": "நோய் எதிர்ப்பு ரகங்களை பயன்படுத்தவும். பயிர் சுழற்சி கடைப்பிடிக்கவும்."
+    },
+    "Corn_(maize)___healthy": {
+        "disease": "மக்காச்சோளம் ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும்."
+    },
+    "Grape___Black_rot": {
+        "disease": "திராட்சை கருப்பு அழுகல் நோய்",
+        "cause": "குய்னார்டியா பிட்வெல்லி என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "மைக்லோபுடானில் பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட பழங்கள் மற்றும் இலைகளை அகற்றவும்.",
+        "prevention": "சரியான கத்தரிப்பு செய்யவும். நல்ல காற்றோட்டம் பராமரிக்கவும்."
+    },
+    "Grape___Esca_(Black_Measles)": {
+        "disease": "திராட்சை எஸ்கா கருப்பு நோய்",
+        "cause": "பேயோமோனியல்லா க்லாமிடோஸ்போரா என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "பாதிக்கப்பட்ட மரக்கட்டைகளை கத்தரிக்கவும். காயம் மூடும் பொருள் பயன்படுத்தவும்.",
+        "prevention": "கத்தரிப்பு காயங்களை பாதுகாக்கவும். செடியின் அழுத்தத்தை குறைக்கவும்."
+    },
+    "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)": {
+        "disease": "திராட்சை இலை கருகல் நோய்",
+        "cause": "இசாரியோப்சிஸ் க்லாவிஸ்போரா என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "செம்பு பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட இலைகளை அகற்றவும்.",
+        "prevention": "நல்ல காற்றோட்டம் பராமரிக்கவும். இலை ஈரப்பதத்தை தவிர்க்கவும்."
+    },
+    "Grape___healthy": {
+        "disease": "திராட்சை செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும்."
+    },
+    "Orange___Haunglongbing_(Citrus_greening)": {
+        "disease": "ஆரஞ்சு சிட்ரஸ் பசுமை நோய்",
+        "cause": "கேண்டிடேட்டஸ் லிபெரிபாக்டர் என்ற பாக்டீரியா காரணமாக வருகிறது",
+        "solution": "குணப்படுத்தும் மருந்து இல்லை. பாதிக்கப்பட்ட மரங்களை வெட்டி அழிக்கவும்.",
+        "prevention": "சைலிட் பூச்சிகளை கட்டுப்படுத்தவும். சான்றளிக்கப்பட்ட நோய் இல்லாத மரங்களை பயன்படுத்தவும்."
+    },
+    "Peach___Bacterial_spot": {
+        "disease": "பீச் பாக்டீரியல் புள்ளி நோய்",
+        "cause": "சாந்தோமோனாஸ் ஆர்போரிகோலா என்ற பாக்டீரியா காரணமாக வருகிறது",
+        "solution": "செம்பு பாக்டீரியாக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட கிளைகளை கத்தரிக்கவும்.",
+        "prevention": "நோய் எதிர்ப்பு ரகங்களை பயன்படுத்தவும். தலை வழியாக நீர் பாய்ச்சுவதை தவிர்க்கவும்."
+    },
+    "Peach___healthy": {
+        "disease": "பீச் செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும்."
+    },
+    "Pepper,_bell___Bacterial_spot": {
+        "disease": "மிளகாய் பாக்டீரியல் புள்ளி நோய்",
+        "cause": "சாந்தோமோனாஸ் கேம்பெஸ்ட்ரிஸ் என்ற பாக்டீரியா காரணமாக வருகிறது",
+        "solution": "செம்பு பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட செடிகளை அகற்றவும்.",
+        "prevention": "சான்றளிக்கப்பட்ட விதைகளை பயன்படுத்தவும். பயிர் சுழற்சி கடைப்பிடிக்கவும்."
+    },
+    "Pepper,_bell___healthy": {
+        "disease": "மிளகாய் செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும்."
+    },
+    "Potato___Early_blight": {
+        "disease": "உருளைக்கிழங்கு ஆரம்ப கருகல் நோய்",
+        "cause": "ஆல்டர்னேரியா சோலானி என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "குளோரோதலோனில் பூஞ்சைக்கொல்லி பயன்படுத்தவும். பாதிக்கப்பட்ட இலைகளை அகற்றவும்.",
+        "prevention": "பயிர் சுழற்சி கடைப்பிடிக்கவும். சரியான தாவர இடைவெளி பராமரிக்கவும்."
+    },
+    "Potato___Late_blight": {
+        "disease": "உருளைக்கிழங்கு தாமத கருகல் நோய்",
+        "cause": "பைட்டோஃப்தோரா இன்ஃபெஸ்டன்ஸ் காரணமாக வருகிறது",
+        "solution": "மெட்டலாக்சில் பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட செடிகளை எரிக்கவும்.",
+        "prevention": "நோய் எதிர்ப்பு ரகங்களை பயன்படுத்தவும். தலை வழியாக நீர் பாய்ச்சுவதை தவிர்க்கவும்."
+    },
+    "Potato___healthy": {
+        "disease": "உருளைக்கிழங்கு செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும்."
+    },
+    "Raspberry___healthy": {
+        "disease": "ராஸ்பெர்ரி செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும்."
+    },
+    "Soybean___healthy": {
+        "disease": "சோயாபீன் செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும்."
+    },
+    "Squash___Powdery_mildew": {
+        "disease": "சுரைக்காய் பொடி பூஞ்சை நோய்",
+        "cause": "போடோஸ்பேரா சாந்தி என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "வேப்பெண்ணெய் அல்லது கந்தக பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட இலைகளை அகற்றவும்.",
+        "prevention": "சரியான தாவர இடைவெளி பராமரிக்கவும். நல்ல காற்றோட்டம் பராமரிக்கவும்."
+    },
+    "Strawberry___Leaf_scorch": {
+        "disease": "ஸ்ட்ராபெர்ரி இலை வெந்த நோய்",
+        "cause": "டிப்லோகார்பான் ஏர்லியானம் என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "காப்டன் பூஞ்சைக்கொல்லி தெளிக்கவும். பழைய மற்றும் பாதிக்கப்பட்ட இலைகளை அகற்றவும்.",
+        "prevention": "சான்றளிக்கப்பட்ட நோய் இல்லாத செடிகளை பயன்படுத்தவும். சரியான இடைவெளி பராமரிக்கவும்."
+    },
+    "Strawberry___healthy": {
+        "disease": "ஸ்ட்ராபெர்ரி செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும்."
+    },
+    "Tomato___Bacterial_spot": {
+        "disease": "தக்காளி பாக்டீரியல் புள்ளி நோய்",
+        "cause": "சாந்தோமோனாஸ் வெசிகேட்டோரியா என்ற பாக்டீரியா காரணமாக வருகிறது",
+        "solution": "செம்பு பாக்டீரியாக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட இலைகள் மற்றும் பழங்களை அகற்றவும்.",
+        "prevention": "விதை சிகிச்சை செய்யவும். தலை வழியாக நீர் பாய்ச்சுவதை தவிர்க்கவும்."
+    },
+    "Tomato___Early_blight": {
+        "disease": "தக்காளி ஆரம்ப கருகல் நோய்",
+        "cause": "ஆல்டர்னேரியா சோலானி என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "செம்பு அடிப்படையிலான பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட இலைகளை அகற்றவும்.",
+        "prevention": "பயிர் சுழற்சி கடைப்பிடிக்கவும். அதிகமான நீர்ப்பாசனத்தை தவிர்க்கவும்."
+    },
+    "Tomato___Late_blight": {
+        "disease": "தக்காளி தாமத கருகல் நோய்",
+        "cause": "பைட்டோஃப்தோரா இன்ஃபெஸ்டன்ஸ் காரணமாக வருகிறது",
+        "solution": "மேன்கோசெப் பூஞ்சைக்கொல்லி பயன்படுத்தவும். பாதிக்கப்பட்ட செடிகளை அழிக்கவும்.",
+        "prevention": "நன்கு வடிகால் வசதியுள்ள மண்ணை பயன்படுத்தவும். காற்றோட்டம் பராமரிக்கவும்."
+    },
+    "Tomato___Leaf_Mold": {
+        "disease": "தக்காளி இலை அச்சு நோய்",
+        "cause": "பாஸாலோரா ஃபுல்வா என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "குளோரோதலோனில் பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட இலைகளை அகற்றவும்.",
+        "prevention": "ஈரப்பதத்தை குறைக்கவும். நல்ல காற்றோட்டம் பராமரிக்கவும்."
+    },
+    "Tomato___Septoria_leaf_spot": {
+        "disease": "தக்காளி செப்டோரியா இலை புள்ளி நோய்",
+        "cause": "செப்டோரியா லைகோபெர்சிசி என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "மேன்கோசெப் அல்லது செம்பு பூஞ்சைக்கொல்லி தெளிக்கவும். கீழ் இலைகளை அகற்றவும்.",
+        "prevention": "பயிர் சுழற்சி கடைப்பிடிக்கவும். மல்சிங் பயன்படுத்தவும்."
+    },
+    "Tomato___Spider_mites Two-spotted_spider_mite": {
+        "disease": "தக்காளி சிலந்தி பூச்சி நோய்",
+        "cause": "டெட்ரானைகஸ் யூர்டிகே என்ற சிலந்தி பூச்சி காரணமாக வருகிறது",
+        "solution": "மைட்டிசைட் அல்லது வேப்பெண்ணெய் தெளிக்கவும். தண்ணீர் தெளிப்பும் உதவியாக இருக்கும்.",
+        "prevention": "தொடர்ந்து தண்ணீர் தெளிக்கவும். இயற்கை எதிரிகளை ஊக்குவிக்கவும்."
+    },
+    "Tomato___Target_Spot": {
+        "disease": "தக்காளி இலக்கு புள்ளி நோய்",
+        "cause": "கோரினெஸ்போரா காசிகோலா என்ற பூஞ்சை காரணமாக வருகிறது",
+        "solution": "அசோக்ஸிஸ்ட்ரோபின் பூஞ்சைக்கொல்லி தெளிக்கவும். பாதிக்கப்பட்ட இலைகளை அகற்றவும்.",
+        "prevention": "சரியான தாவர இடைவெளி பராமரிக்கவும். இலை ஈரப்பதத்தை தவிர்க்கவும்."
+    },
+    "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+        "disease": "தக்காளி மஞ்சள் இலை சுருள் வைரஸ்",
+        "cause": "வெள்ளை ஈ மூலம் பரவும் பெகோமோவைரஸ் காரணமாக வருகிறது",
+        "solution": "பாதிக்கப்பட்ட செடிகளை அகற்றவும். வெள்ளை ஈ கட்டுப்படுத்தவும்.",
+        "prevention": "நோய் எதிர்ப்பு ரகங்களை பயன்படுத்தவும். பூச்சிக்கொல்லி தெளிக்கவும்."
+    },
+    "Tomato___Tomato_mosaic_virus": {
+        "disease": "தக்காளி மொசைக் வைரஸ் நோய்",
+        "cause": "டோபாமோவைரஸ் காரணமாக வருகிறது",
+        "solution": "பாதிக்கப்பட்ட செடிகளை அகற்றவும். இரசாயன மருந்து இல்லை.",
+        "prevention": "வைரஸ் இல்லாத விதைகளை பயன்படுத்தவும். கருவிகளை கிருமிநாசினி செய்யவும்."
+    },
+    "Tomato___healthy": {
+        "disease": "தக்காளி செடி ஆரோக்கியமாக உள்ளது",
+        "cause": "எந்த நோயும் கண்டறியப்படவில்லை",
+        "solution": "எந்த சிகிச்சையும் தேவையில்லை! செடி நலமாக உள்ளது.",
+        "prevention": "தொடர்ந்து கண்காணிக்கவும்."
     },
 }
 
@@ -261,9 +261,9 @@ async def predict(file: UploadFile = File(...)):
             disease_key = model.names[int(box.cls)]
             solution = disease_solutions.get(disease_key, {
                 "disease": disease_key.replace("___", " - ").replace("_", " "),
-                "cause": "Further analysis needed",
-                "solution": "Consult an agricultural expert",
-                "prevention": "Regular monitoring pannunga"
+                "cause": "மேலும் ஆய்வு தேவை",
+                "solution": "விவசாய நிபுணரை அணுகவும்",
+                "prevention": "தொடர்ந்து கண்காணிக்கவும்"
             })
             detections.append({
                 "disease_key": disease_key,
