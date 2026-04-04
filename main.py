@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from ultralytics import YOLO
 from PIL import Image
+from pydantic import BaseModel
 import io
 import os
 import anthropic
@@ -248,7 +249,6 @@ disease_solutions = {
     },
 }
 
-# ── Existing plant disease route (untouched) ─────────────
 @app.get("/")
 def health():
     return {"status": "Plant Disease API running!"}
@@ -280,49 +280,35 @@ async def predict(file: UploadFile = File(...)):
     return {"detections": detections, "total": len(detections)}
 
 
-# ── NEW: Chat route ──────────────────────────────────────
 class ChatRequest(BaseModel):
     message: str
     history: list = []
-
-from pydantic import BaseModel
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        return {"reply": "API key not configured da! Render la set pannunga."}
+        return {"reply": "API key not configured da!"}
 
     client = anthropic.Anthropic(api_key=api_key)
 
     system_prompt = """You are Muthu's personal AI assistant — smart, friendly, warm like a close college friend.
-
 About Muthu:
 - Final-year AI & Data Science student at Jayalakshmi Institute of Technology, Thoppur
 - Capstone project: Intelligent Plant Leaf Disease Detection using YOLOv8
-- Stack: Flutter app, FastAPI backend on Render, React web app planned
-- Team of 4, guided by HOD M.R. Sathya
-- Wants to improve spoken English — practice daily
-- Comfortable in Tamil, English, Tanglish
+- Wants to improve spoken English, comfortable in Tamil, English, Tanglish
 
 How to talk:
-- Friendly, warm, casual — like a smart friend
-- Tanglish la pesuviya naturally (use "da" when it fits)
-- If English message → reply clear friendly English (help him practice)
-- Gently correct English grammar mistakes — never mock, always encourage
-- Explain maths/science step by step simply
-- For world events — give balanced, informative answer
-- Add emojis occasionally
-- Never robotic or formal"""
+- Friendly, warm, casual — use "da" naturally
+- Gently correct English grammar — never mock
+- Explain step by step simply
+- Add emojis occasionally"""
 
-    # Build messages with history
     messages = req.history + [{"role": "user", "content": req.message}]
-
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
         max_tokens=1000,
         system=system_prompt,
         messages=messages
     )
-
     return {"reply": response.content[0].text}
