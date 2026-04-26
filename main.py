@@ -5,6 +5,7 @@ from PIL import Image
 from pydantic import BaseModel
 import io
 import os
+import anthropic
 
 app = FastAPI()
 
@@ -15,6 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Load ONNX model for faster inference
 model = YOLO("best.onnx", task="detect")
 
 disease_solutions = {
@@ -258,15 +260,31 @@ async def predict(file: UploadFile = File(...)):
     img = Image.open(io.BytesIO(contents)).convert("RGB")
     results = model(img)
     detections = []
+    
     for r in results:
         for box in r.boxes:
             disease_key = model.names[int(box.cls)]
-            solution = disease_solutions.get(disease_key, {
-                "disease": disease_key.replace("___", " - ").replace("_", " "),
-                "cause": "மேலும் ஆய்வு தேவை",
-                "solution": "விவசாய நிபுணரை அணுகவும்",
-                "prevention": "தொடர்ந்து கண்காணிக்கவும்"
-            })
+            
+            # Smart normalization for matching
+            # e.g., converts "Tomato leaf late blight" -> "Tomato_leaf_late_blight"
+            norm_key = disease_key.lower().replace(" ", "_").replace("___", "_")
+            
+            solution = None
+            # Check for matches in our dictionary
+            for key, val in disease_solutions.items():
+                if key.lower().replace(" ", "_").replace("___", "_") == norm_key:
+                    solution = val
+                    break
+            
+            # Default if no match found
+            if not solution:
+                solution = {
+                    "disease": disease_key.replace("___", " ").replace("_", " "),
+                    "cause": "மேலும் ஆய்வு தேவை",
+                    "solution": "விவசாய நிபுணரை அணுகவும்",
+                    "prevention": "தொடர்ந்து கண்காணிக்கவும்"
+                }
+
             detections.append({
                 "disease_key": disease_key,
                 "disease_name": solution["disease"],
@@ -276,8 +294,8 @@ async def predict(file: UploadFile = File(...)):
                 "prevention": solution["prevention"],
                 "bbox": box.xyxy[0].tolist()
             })
+            
     return {"detections": detections, "total": len(detections)}
-
 
 class ChatRequest(BaseModel):
     message: str
