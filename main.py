@@ -1,11 +1,10 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from ultralytics import YOLO
 from PIL import Image
 from pydantic import BaseModel
 import io
 import os
-import anthropic
 
 app = FastAPI()
 
@@ -16,7 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = YOLO("best.pt")
+model = YOLO("best.onnx", task="detect")
 
 disease_solutions = {
     "Apple___Apple_scab": {
@@ -251,7 +250,7 @@ disease_solutions = {
 
 @app.get("/")
 def health():
-    return {"status": "Plant Disease API running!"}
+    return {"status": "Plant Disease ONNX API running!"}
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
