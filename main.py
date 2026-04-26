@@ -5,7 +5,7 @@ from PIL import Image
 from pydantic import BaseModel
 import io
 import os
-import anthropic
+
 
 app = FastAPI()
 
@@ -297,35 +297,3 @@ async def predict(file: UploadFile = File(...)):
             
     return {"detections": detections, "total": len(detections)}
 
-class ChatRequest(BaseModel):
-    message: str
-    history: list = []
-
-@app.post("/chat")
-async def chat(req: ChatRequest):
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        return {"reply": "API key not configured da!"}
-
-    client = anthropic.Anthropic(api_key=api_key)
-
-    system_prompt = """You are Muthu's personal AI assistant — smart, friendly, warm like a close college friend.
-About Muthu:
-- Final-year AI & Data Science student at Jayalakshmi Institute of Technology, Thoppur
-- Capstone project: Intelligent Plant Leaf Disease Detection using YOLOv8
-- Wants to improve spoken English, comfortable in Tamil, English, Tanglish
-
-How to talk:
-- Friendly, warm, casual — use "da" naturally
-- Gently correct English grammar — never mock
-- Explain step by step simply
-- Add emojis occasionally"""
-
-    messages = req.history + [{"role": "user", "content": req.message}]
-    response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=1000,
-        system=system_prompt,
-        messages=messages
-    )
-    return {"reply": response.content[0].text}
