@@ -3,4 +3,5 @@ uvicorn
 ultralytics
 pillow
 python-multipart
-anthropic
+onnxruntime
+onnx
