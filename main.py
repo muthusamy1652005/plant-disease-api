@@ -2,22 +2,24 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from ultralytics import YOLO
 from PIL import Image
-from pydantic import BaseModel
 import io
 import os
 
-
-app = FastAPI()
+app = FastAPI(
+    title='Plant Leaf Disease Detection API',
+    description='YOLOv8-based plant disease detection - Tamil Language',
+    version='2.0.0',
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=['*'],
+    allow_methods=['*'],
+    allow_headers=['*'],
 )
 
-# Load ONNX model for faster inference
-model = YOLO("best.onnx", task="detect")
+# Load YOLOv8 model
+model = YOLO('best.onnx', task='detect')
 
 disease_solutions = {
     # TOMATO
@@ -27,17 +29,17 @@ disease_solutions = {
         'solution': 'மேன்கோசெப் பூஞ்சைக்கொல்லி தெளிக்கவும்',
         'prevention': 'நீர் தேங்காமல் வடிகால் ஏற்படுத்தவும்'
     },
-    'Tomato___Septoria_leaf_spot': {
-        'disease': 'தக்காளி செப்டோரியா இலை புள்ளி நோய்',
-        'cause': 'செப்டோரியா லைக்கோபெர்சிசி பூஞ்சை காரணமாக வருகிறது',
-        'solution': 'குளோரோதலோனில் பூஞ்சைக்கொல்லி தெளிக்கவும்',
-        'prevention': 'கீழ் இலைகளை நீக்கி காற்றோட்டம் ஏற்படுத்தவும்'
-    },
     'Tomato___Early_blight': {
         'disease': 'தக்காளி ஆரம்ப கருகல் நோய்',
         'cause': 'ஆல்டர்னேரியா சோலானி பூஞ்சை காரணமாக வருகிறது',
         'solution': 'செம்பு அடிப்படையிலான பூஞ்சைக்கொல்லி தெளிக்கவும்',
         'prevention': 'பயிர் சுழற்சி கடைப்பிடிக்கவும்'
+    },
+    'Tomato___Septoria_leaf_spot': {
+        'disease': 'தக்காளி செப்டோரியா இலை புள்ளி நோய்',
+        'cause': 'செப்டோரியா லைக்கோபெர்சிசி பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'குளோரோதலோனில் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'கீழ் இலைகளை நீக்கி காற்றோட்டம் ஏற்படுத்தவும்'
     },
     'Tomato___Bacterial_spot': {
         'disease': 'தக்காளி பாக்டீரியா புள்ளி நோய்',
@@ -83,6 +85,12 @@ disease_solutions = {
     },
 
     # CORN
+    'Corn___Common_rust_': {
+        'disease': 'சோளம் பொதுவான துரு நோய்',
+        'cause': 'புக்கினியா சோர்கி பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'ட்ரைஅசோல் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'நோய் எதிர்ப்பு சக்தி உள்ள ரகங்கள் பயன்படுத்தவும்'
+    },
     'Corn___Common_rust': {
         'disease': 'சோளம் பொதுவான துரு நோய்',
         'cause': 'புக்கினியா சோர்கி பூஞ்சை காரணமாக வருகிறது',
@@ -143,7 +151,7 @@ disease_solutions = {
     },
     'Apple___Cedar_apple_rust': {
         'disease': 'ஆப்பிள் கேதார் துரு நோய்',
-        'cause': 'ஜிம்னோஸ்போரான்ஜியம் ஜுனிபெரி-வர்ஜினியனே காரணமாக வருகிறது',
+        'cause': 'ஜிம்னோஸ்போரான்ஜியம் காரணமாக வருகிறது',
         'solution': 'மைக்கோபுட்டானில் பூஞ்சைக்கொல்லி தெளிக்கவும்',
         'prevention': 'அருகில் ஜூனிபர் மரங்கள் வளர்க்காதீர்கள்'
     },
@@ -163,13 +171,13 @@ disease_solutions = {
     },
     'Grape___Esca_(Black_Measles)': {
         'disease': 'திராட்சை எஸ்கா நோய்',
-        'cause': 'பாஸ்கிரியோஸ்போரா ஓட்டோமன்னியா பூஞ்சை காரணமாக வருகிறது',
+        'cause': 'பாஸ்கிரியோஸ்போரா பூஞ்சை காரணமாக வருகிறது',
         'solution': 'பாதிக்கப்பட்ட கொடிகளை வெட்டி அகற்றவும்',
         'prevention': 'கத்தரிக்கும் கருவிகளை கிருமிநாசினி செய்யவும்'
     },
     'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)': {
         'disease': 'திராட்சை இலை கருகல் நோய்',
-        'cause': 'இசரியோப்சிஸ் க்ளாவிஸ்போரா பூஞ்சை காரணமாக வருகிறது',
+        'cause': 'இசரியோப்சிஸ் பூஞ்சை காரணமாக வருகிறது',
         'solution': 'செம்பு அடிப்படையிலான பூஞ்சைக்கொல்லி தெளிக்கவும்',
         'prevention': 'தோட்டத்தில் காற்றோட்டம் ஏற்படுத்தவும்'
     },
@@ -183,7 +191,7 @@ disease_solutions = {
     # STRAWBERRY
     'Strawberry___Leaf_scorch': {
         'disease': 'ஸ்ட்ராபெரி இலை கருகல் நோய்',
-        'cause': 'டைடோஸ்பேரெல்லா பிராசிக்கோலா பூஞ்சை காரணமாக வருகிறது',
+        'cause': 'டைடோஸ்பேரெல்லா பூஞ்சை காரணமாக வருகிறது',
         'solution': 'கேப்டன் பூஞ்சைக்கொல்லி தெளிக்கவும்',
         'prevention': 'பாதிக்கப்பட்ட இலைகளை அகற்றவும்'
     },
@@ -197,7 +205,7 @@ disease_solutions = {
     # PEACH
     'Peach___Bacterial_spot': {
         'disease': 'பீச் பாக்டீரியா புள்ளி நோய்',
-        'cause': 'சாந்தோமோனாஸ் அர்போரிக்கோலா பாக்டீரியா காரணமாக வருகிறது',
+        'cause': 'சாந்தோமோனாஸ் பாக்டீரியா காரணமாக வருகிறது',
         'solution': 'செம்பு ஹைட்ராக்சைடு தெளிக்கவும்',
         'prevention': 'நோயற்ற மரக்கன்றுகள் பயன்படுத்தவும்'
     },
@@ -244,7 +252,7 @@ disease_solutions = {
         'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
     },
 
-    # BLUEBERRY, RASPBERRY, SOYBEAN, SQUASH
+    # OTHERS
     'Blueberry___healthy': {
         'disease': 'ப்ளூபெரி ஆரோக்கியமான இலை',
         'cause': 'நோய் எதுவும் இல்லை',
@@ -271,50 +279,63 @@ disease_solutions = {
     },
 }
 
-@app.get("/")
-def health():
-    return {"status": "Plant Disease ONNX API running!"}
 
-@app.post("/predict")
+@app.get('/')
+def health():
+    return {
+        'status': 'Plant Disease API running!',
+        'version': '2.0.0',
+        'model': 'YOLOv8 ONNX — PlantVillage Dataset',
+        'classes': 38,
+        'language': 'Tamil'
+    }
+
+
+@app.post('/predict')
 async def predict(file: UploadFile = File(...)):
     contents = await file.read()
-    img = Image.open(io.BytesIO(contents)).convert("RGB")
+    img = Image.open(io.BytesIO(contents)).convert('RGB')
+
     results = model(img)
     detections = []
-    
+
     for r in results:
         for box in r.boxes:
             disease_key = model.names[int(box.cls)]
-            
-            # Smart normalization for matching
-            # e.g., converts "Tomato leaf late blight" -> "Tomato_leaf_late_blight"
-            norm_key = disease_key.lower().replace(" ", "_").replace("___", "_")
-            
-            solution = None
-            # Check for matches in our dictionary
-            for key, val in disease_solutions.items():
-                if key.lower().replace(" ", "_").replace("___", "_") == norm_key:
-                    solution = val
-                    break
-            
-            # Default if no match found
-            if not solution:
-                solution = {
-                    "disease": disease_key.replace("___", " ").replace("_", " "),
-                    "cause": "மேலும் ஆய்வு தேவை",
-                    "solution": "விவசாய நிபுணரை அணுகவும்",
-                    "prevention": "தொடர்ந்து கண்காணிக்கவும்"
-                }
+            confidence = round(float(box.conf) * 100, 2)
 
-            detections.append({
-                "disease_key": disease_key,
-                "disease_name": solution["disease"],
-                "confidence": round(float(box.conf) * 100, 2),
-                "cause": solution["cause"],
-                "solution": solution["solution"],
-                "prevention": solution["prevention"],
-                "bbox": box.xyxy[0].tolist()
+            solution = disease_solutions.get(disease_key, {
+                'disease': disease_key.replace('___', ' - ').replace('_', ' '),
+                'cause': 'மேலும் ஆய்வு தேவை',
+                'solution': 'விவசாய நிபுணரை அணுகவும்',
+                'prevention': 'தொடர்ந்து கண்காணிக்கவும்'
             })
-            
-    return {"detections": detections, "total": len(detections)}
 
+            if confidence >= 70:
+                detections.append({
+                    'disease_key': disease_key,
+                    'disease_name': solution['disease'],
+                    'confidence': confidence,
+                    'cause': solution['cause'],
+                    'solution': solution['solution'],
+                    'prevention': solution['prevention'],
+                    'bbox': box.xyxy[0].tolist()
+                })
+            else:
+                detections.append({
+                    'disease_key': 'uncertain',
+                    'disease_name': 'தெளிவற்ற கண்டறிதல்',
+                    'confidence': confidence,
+                    'cause': 'படம் தெளிவாக இல்லை',
+                    'solution': 'தெளிவான புகைப்படம் எடுங்கள்',
+                    'prevention': 'விவசாய நிபுணரை அணுகவும்',
+                    'bbox': box.xyxy[0].tolist()
+                })
+
+    return {'detections': detections, 'total': len(detections)}
+
+
+if __name__ == '__main__':
+    import uvicorn
+    port = int(os.environ.get('PORT', 8000))
+    uvicorn.run('main:app', host='0.0.0.0', port=port)
