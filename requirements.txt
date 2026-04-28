@@ -5,3 +5,5 @@ pillow
 python-multipart
 onnxruntime
 onnx
+langchain-google-genai
+langchain-core
