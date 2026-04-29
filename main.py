@@ -7,7 +7,7 @@ import os
 
 # --- LANGCHAIN & GEMINI IMPORTS ---
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.schema import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage, HumanMessage  # <--- Change inga dhaan
 
 app = FastAPI(title='Plant Disease Detection & Smart AI Farmer')
 
