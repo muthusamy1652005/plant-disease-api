@@ -27,7 +27,7 @@ api_key = os.getenv("GOOGLE_API_KEY")
 
 # Fallback only for testing
 if not api_key:
-    api_key = "AIzaSyCdnRPf6HS6Q08ujMrmO_F0qoJC9isQ9F0"
+    api_key = "AIzaSyDvzFrw8u0svtyrVPeO5Ck1vao8kryjJe4"
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash", 
