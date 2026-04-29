@@ -25,10 +25,10 @@ model = YOLO('best.onnx', task='detect')
 # --- GEMINI SETUP ---
 # Render Environment Variables-la GOOGLE_API_KEY set pannalaam
 # Illana inga direct-aa unga key-ah paste pannunga
-api_key = os.environ.get("GOOGLE_API_KEY", "AIzaSyCoMEfumFfYwYp7gGSZZ-Pu5289Ldo9K1E")
+api_key = os.environ.get("GOOGLE_API_KEY", "AIzaSyCsSvQg7-sxsWV4xP5jImnC1N9MjHTTzJo")
 
 llm = ChatGoogleGenerativeAI(
-    model="models/gemini-2.0-flash", # <--- Fixed model name
+    model="models/gemini-1.5-flash", # <--- Fixed model name
     google_api_key=api_key,
     temperature=0.7
 )
