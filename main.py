@@ -28,7 +28,7 @@ model = YOLO('best.onnx', task='detect')
 os.environ["GOOGLE_API_KEY"] = "AIzaSyCRc9sIAI17IxsID_EaGO_OnWiQWlcSAfU" 
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
+    model="gemini-1.5-flash-latest",
     temperature=0.7
 )
 
