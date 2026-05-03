@@ -4,14 +4,15 @@ from ultralytics import YOLO
 from PIL import Image
 import io
 import os
-
-# --- LANGCHAIN & GEMINI IMPORTS ---
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import SystemMessage, HumanMessage 
+from langchain_core.messages import SystemMessage, HumanMessage
 
-app = FastAPI(title='Zynixo Agri-AI Backend')
+app = FastAPI(
+    title='Plant Leaf Disease Detection API',
+    description='YOLOv8 + Gemini AI - Tamil Language',
+    version='3.0.0',
+)
 
-# CORS setup for Flutter
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],
@@ -19,96 +20,317 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-# Load YOLOv8 model (Ensure best.onnx is in the same folder)
+# Load YOLOv8 model
 model = YOLO('best.onnx', task='detect')
 
-# --- GEMINI SETUP (SECURE) ---
+# Gemini Setup
 api_key = os.getenv("GOOGLE_API_KEY")
-
-# Fallback API Key (Only if Environment Secret is not set)
 if not api_key:
-    api_key = "AIzaSyDvzFrw8u0svtyrVPeO5Ck1vao8kryjJe4"
+    api_key = "YOUR_GEMINI_API_KEY_HERE"
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash", 
+    model="gemini-2.0-flash",
     google_api_key=api_key,
     temperature=0.7
 )
 
-# --- FULL 38 CLASSES MASTER DICTIONARY ---
+# Full 38 Classes Tamil Disease Solutions
 disease_solutions = {
     # APPLE
-    'Apple___Apple_scab': {'disease': 'ஆப்பிள் செதில் நோய்', 'cause': 'வென்டுரியா பூஞ்சை', 'solution': 'கேப்டன் தெளிக்கவும்', 'prevention': 'இலைகளை அகற்றவும்'},
-    'Apple___Black_rot': {'disease': 'ஆப்பிள் கருப்பு அழுகல்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'பூஞ்சைக்கொல்லி', 'prevention': 'கிளைகளை கத்தரித்தல்'},
-    'Apple___Cedar_apple_rust': {'disease': 'ஆப்பிள் துரு நோய்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'மைக்கோபுட்டானில் தெளிக்கவும்', 'prevention': 'சுற்றுப்புற சுத்தம்'},
-    'Apple___healthy': {'disease': 'ஆப்பிள் ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'தொடர்ந்து பராமரிக்கவும்', 'prevention': 'கண்காணிப்பு'},
+    'Apple___Apple_scab': {
+        'disease': 'ஆப்பிள் செதில் நோய்',
+        'cause': 'வென்டுரியா இனாக்வாலிஸ் பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'கேப்டன் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'விழுந்த இலைகளை அகற்றி அழிக்கவும்'
+    },
+    'Apple___Black_rot': {
+        'disease': 'ஆப்பிள் கருப்பு அழுகல் நோய்',
+        'cause': 'போட்ரியோஸ்பேரியா ஒப்டியுசா பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'மைக்லோபுட்டானில் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'பாதிக்கப்பட்ட கிளைகளை கத்தரிக்கவும்'
+    },
+    'Apple___Cedar_apple_rust': {
+        'disease': 'ஆப்பிள் கேதார் துரு நோய்',
+        'cause': 'ஜிம்னோஸ்போரான்ஜியம் காரணமாக வருகிறது',
+        'solution': 'மைக்கோபுட்டானில் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'அருகில் ஜூனிபர் மரங்கள் வளர்க்காதீர்கள்'
+    },
+    'Apple___healthy': {
+        'disease': 'ஆப்பிள் ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
     # BLUEBERRY
-    'Blueberry___healthy': {'disease': 'புளுபெர்ரி ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'பராமரிப்பு', 'prevention': 'கண்காணிப்பு'},
+    'Blueberry___healthy': {
+        'disease': 'ப்ளூபெரி ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
     # CHERRY
-    'Cherry_(including_sour)___Powdery_mildew': {'disease': 'செர்ரி சாம்பல் நோய்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'கந்தகம் தெளிக்கவும்', 'prevention': 'காற்றோட்டம்'},
-    'Cherry_(including_sour)___healthy': {'disease': 'செர்ரி ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'பராமரிப்பு', 'prevention': 'கண்காணிப்பு'},
+    'Cherry_(including_sour)___Powdery_mildew': {
+        'disease': 'செர்ரி பவுடரி மில்டியூ நோய்',
+        'cause': 'போடோஸ்பேரா சேராசி பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'கந்தக அடிப்படையிலான பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'அதிக ஈரப்பதம் தவிர்க்கவும்'
+    },
+    'Cherry_(including_sour)___healthy': {
+        'disease': 'செர்ரி ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
-    # CORN / MAIZE
-    'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot': {'disease': 'சோளம் சாம்பல் இலை புள்ளி', 'cause': 'செர்கோஸ்போரா பூஞ்சை', 'solution': 'பூஞ்சைக்கொல்லி', 'prevention': 'பயிர் சுழற்சி'},
-    'Corn_(maize)___Common_rust': {'disease': 'சோளம் துரு நோய்', 'cause': 'புக்கினியா பூஞ்சை', 'solution': 'ட்ரைஅசோல் தெளிக்கவும்', 'prevention': 'நோய் எதிர்ப்பு ரகங்கள்'},
-    'Corn_(maize)___Northern_Leaf_Blight': {'disease': 'சோளம் வடக்கு இலை கருகல்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'அசோக்ஸிஸ்ட்ரோபின்', 'prevention': 'இலை நீக்கம்'},
-    'Corn_(maize)___healthy': {'disease': 'சோளம் ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'உரம் இடவும்', 'prevention': 'கண்காணிப்பு'},
+    # CORN
+    'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot': {
+        'disease': 'சோளம் சாம்பல் இலை புள்ளி நோய்',
+        'cause': 'செர்கோஸ்போரா சீடினா பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'ஸ்ட்ரோபிலுரின் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'நல்ல காற்றோட்டம் ஏற்படுத்தவும்'
+    },
+    'Corn_(maize)___Common_rust': {
+        'disease': 'சோளம் பொதுவான துரு நோய்',
+        'cause': 'புக்கினியா சோர்கி பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'ட்ரைஅசோல் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'நோய் எதிர்ப்பு சக்தி உள்ள ரகங்கள் பயன்படுத்தவும்'
+    },
+    'Corn_(maize)___Northern_Leaf_Blight': {
+        'disease': 'சோளம் வடக்கு இலை கருகல் நோய்',
+        'cause': 'எக்ஸெரோஹிலம் துர்சிகம் பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'அசோக்ஸிஸ்ட்ரோபின் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'பயிர் சுழற்சி செய்யவும்'
+    },
+    'Corn_(maize)___healthy': {
+        'disease': 'சோளம் ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
+
+    # Old Corn keys (backward compatibility)
+    'Corn___Common_rust': {
+        'disease': 'சோளம் பொதுவான துரு நோய்',
+        'cause': 'புக்கினியா சோர்கி பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'ட்ரைஅசோல் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'நோய் எதிர்ப்பு சக்தி உள்ள ரகங்கள் பயன்படுத்தவும்'
+    },
+    'Corn___Northern_Leaf_Blight': {
+        'disease': 'சோளம் வடக்கு இலை கருகல் நோய்',
+        'cause': 'எக்ஸெரோஹிலம் துர்சிகம் பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'அசோக்ஸிஸ்ட்ரோபின் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'பயிர் சுழற்சி செய்யவும்'
+    },
+    'Corn___Cercospora_leaf_spot Gray_leaf_spot': {
+        'disease': 'சோளம் சாம்பல் இலை புள்ளி நோய்',
+        'cause': 'செர்கோஸ்போரா சீடினா பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'ஸ்ட்ரோபிலுரின் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'நல்ல காற்றோட்டம் ஏற்படுத்தவும்'
+    },
+    'Corn___healthy': {
+        'disease': 'சோளம் ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
     # GRAPE
-    'Grape___Black_rot': {'disease': 'திராட்சை கருப்பு அழுகல்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'பூஞ்சைக்கொல்லி', 'prevention': 'கத்தரித்தல்'},
-    'Grape___Esca_(Black_Measles)': {'disease': 'திராட்சை எஸ்கா நோய்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'பாதிக்கப்பட்ட பகுதியை நீக்கவும்', 'prevention': 'முறையான நீர் மேலாண்மை'},
-    'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)': {'disease': 'திராட்சை இலை கருகல்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'மருந்து தெளிக்கவும்', 'prevention': 'சுத்தம்'},
-    'Grape___healthy': {'disease': 'திராட்சை ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'பராமரிப்பு', 'prevention': 'கண்காணிப்பு'},
+    'Grape___Black_rot': {
+        'disease': 'திராட்சை கருப்பு அழுகல் நோய்',
+        'cause': 'குயிக்னார்டியா பிட்வெல்லி பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'மேன்கோசெப் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'பாதிக்கப்பட்ட பழங்களை அகற்றவும்'
+    },
+    'Grape___Esca_(Black_Measles)': {
+        'disease': 'திராட்சை எஸ்கா நோய்',
+        'cause': 'பாஸ்கிரியோஸ்போரா பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'பாதிக்கப்பட்ட கொடிகளை வெட்டி அகற்றவும்',
+        'prevention': 'கத்தரிக்கும் கருவிகளை கிருமிநாசினி செய்யவும்'
+    },
+    'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)': {
+        'disease': 'திராட்சை இலை கருகல் நோய்',
+        'cause': 'இசரியோப்சிஸ் பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'செம்பு அடிப்படையிலான பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'தோட்டத்தில் காற்றோட்டம் ஏற்படுத்தவும்'
+    },
+    'Grape___healthy': {
+        'disease': 'திராட்சை ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
     # ORANGE
-    'Orange___Haunglongbing_(Citrus_greening)': {'disease': 'ஆரஞ்சு பச்சை நோய்', 'cause': 'பாக்டீரியா தொற்று', 'solution': 'செடியை அகற்றவும்', 'prevention': 'பூச்சி கட்டுப்பாடு'},
+    'Orange___Haunglongbing_(Citrus_greening)': {
+        'disease': 'ஆரஞ்சு சிட்ரஸ் பச்சையாகும் நோய்',
+        'cause': 'கேன்டிடேட்டஸ் லிபரிபேக்டர் பாக்டீரியா காரணமாக வருகிறது',
+        'solution': 'டெட்ராசைக்ளின் ஆன்டிபயாடிக் செலுத்தவும்',
+        'prevention': 'சைலிட் பூச்சிகளை கட்டுப்படுத்தவும்'
+    },
 
     # PEACH
-    'Peach___Bacterial_spot': {'disease': 'பீச் பாக்டீரியா புள்ளி', 'cause': 'பாக்டீரியா தொற்று', 'solution': 'செம்பு தெளிக்கவும்', 'prevention': 'இலை உதிர்வை தடுத்தல்'},
-    'Peach___healthy': {'disease': 'பீச் ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'பராமரிப்பு', 'prevention': 'கண்காணிப்பு'},
+    'Peach___Bacterial_spot': {
+        'disease': 'பீச் பாக்டீரியா புள்ளி நோய்',
+        'cause': 'சாந்தோமோனாஸ் பாக்டீரியா காரணமாக வருகிறது',
+        'solution': 'செம்பு ஹைட்ராக்சைடு தெளிக்கவும்',
+        'prevention': 'நோயற்ற மரக்கன்றுகள் பயன்படுத்தவும்'
+    },
+    'Peach___healthy': {
+        'disease': 'பீச் ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
-    # PEPPER BELL
-    'Pepper,_bell___Bacterial_spot': {'disease': 'மிளகாய் பாக்டீரியா புள்ளி', 'cause': 'பாக்டீரியா தொற்று', 'solution': 'செம்பு சல்பேட்', 'prevention': 'சுத்தம்'},
-    'Pepper,_bell___healthy': {'disease': 'மிளகாய் ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'பராமரிப்பு', 'prevention': 'கண்காணிப்பு'},
+    # PEPPER
+    'Pepper,_bell___Bacterial_spot': {
+        'disease': 'மிளகாய் பாக்டீரியா புள்ளி நோய்',
+        'cause': 'சாந்தோமோனாஸ் காம்பெஸ்ட்ரிஸ் பாக்டீரியா காரணமாக வருகிறது',
+        'solution': 'செம்பு அடிப்படையிலான மருந்து தெளிக்கவும்',
+        'prevention': 'நோயற்ற விதைகள் பயன்படுத்தவும்'
+    },
+    'Pepper,_bell___healthy': {
+        'disease': 'மிளகாய் ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
     # POTATO
-    'Potato___Early_blight': {'disease': 'உருளைக்கிழங்கு முன் கருகல்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'பூஞ்சைக்கொல்லி', 'prevention': 'இடைவெளி'},
-    'Potato___Late_blight': {'disease': 'உருளைக்கிழங்கு பின் கருகல்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'மேன்கோசெப் தெளிக்கவும்', 'prevention': 'வடிகால்'},
-    'Potato___healthy': {'disease': 'உருளைக்கிழங்கு ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'பராமரிப்பு', 'prevention': 'கண்காணிப்பு'},
+    'Potato___Early_blight': {
+        'disease': 'உருளைக்கிழங்கு ஆரம்ப கருகல் நோய்',
+        'cause': 'ஆல்டர்னேரியா சோலானி பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'குளோரோதலோனில் பூஞ்சைக்கொல்லி பயன்படுத்தவும்',
+        'prevention': 'சரியான தாவர இடைவெளி பராமரிக்கவும்'
+    },
+    'Potato___Late_blight': {
+        'disease': 'உருளைக்கிழங்கு தாமத கருகல் நோய்',
+        'cause': 'பைட்டோஃப்தோரா இன்ஃபெஸ்டன்ஸ் காரணமாக வருகிறது',
+        'solution': 'மேட்டலாக்சில் கலந்த பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'குளிர்ச்சியான காலநிலையில் கண்காணிக்கவும்'
+    },
+    'Potato___healthy': {
+        'disease': 'உருளைக்கிழங்கு ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
     # RASPBERRY
-    'Raspberry___healthy': {'disease': 'ராஸ்பெர்ரி ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'பராமரிப்பு', 'prevention': 'கண்காணிப்பு'},
+    'Raspberry___healthy': {
+        'disease': 'ராஸ்பெரி ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
     # SOYBEAN
-    'Soybean___healthy': {'disease': 'சோயாபீன் ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'பராமரிப்பு', 'prevention': 'கண்காணிப்பு'},
+    'Soybean___healthy': {
+        'disease': 'சோயாபீன் ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
     # SQUASH
-    'Squash___Powdery_mildew': {'disease': 'பூசணி சாம்பல் நோய்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'பூஞ்சைக்கொல்லி', 'prevention': 'காற்றோட்டம்'},
+    'Squash___Powdery_mildew': {
+        'disease': 'ஸ்குவாஷ் பவுடரி மில்டியூ நோய்',
+        'cause': 'போடோஸ்பேரா சாந்தி பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'கந்தக பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'காற்றோட்டமான சூழ்நிலை பராமரிக்கவும்'
+    },
 
     # STRAWBERRY
-    'Strawberry___Leaf_scorch': {'disease': 'ஸ்ட்ராபெர்ரி இலை கருகல்', 'cause': 'பூஞ்சை தொற்று', 'solution': 'மருந்து தெளிக்கவும்', 'prevention': 'தண்ணீர் தேங்காமல் பார்த்தல்'},
-    'Strawberry___healthy': {'disease': 'ஸ்ட்ராபெர்ரி ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'பராமரிப்பு', 'prevention': 'கண்காணிப்பு'},
+    'Strawberry___Leaf_scorch': {
+        'disease': 'ஸ்ட்ராபெரி இலை கருகல் நோய்',
+        'cause': 'டைடோஸ்பேரெல்லா பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'கேப்டன் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'பாதிக்கப்பட்ட இலைகளை அகற்றவும்'
+    },
+    'Strawberry___healthy': {
+        'disease': 'ஸ்ட்ராபெரி ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 
     # TOMATO
-    'Tomato___Bacterial_spot': {'disease': 'தக்காளி பாக்டீரியா புள்ளி', 'cause': 'பாக்டீரியா', 'solution': 'செம்பு தெளிக்கவும்', 'prevention': 'சுத்தம்'},
-    'Tomato___Early_blight': {'disease': 'தக்காளி ஆரம்ப கருகல்', 'cause': 'பூஞ்சை', 'solution': 'பூஞ்சைக்கொல்லி', 'prevention': 'பயிர் சுழற்சி'},
-    'Tomato___Late_blight': {'disease': 'தக்காளி தாமத கருகல்', 'cause': 'பூஞ்சை', 'solution': 'மேன்கோசெப்', 'prevention': 'வடிகால்'},
-    'Tomato___Leaf_Mold': {'disease': 'தக்காளி இலை அச்சு', 'cause': 'பூஞ்சை', 'solution': 'மருந்து தெளிக்கவும்', 'prevention': 'காற்றோட்டம்'},
-    'Tomato___Septoria_leaf_spot': {'disease': 'தக்காளி செப்டோரியா புள்ளி', 'cause': 'பூஞ்சை', 'solution': 'பூஞ்சைக்கொல்லி', 'prevention': 'இலை நீக்கம்'},
-    'Tomato___Spider_mites Two-spotted_spider_mite': {'disease': 'தக்காளி சிலந்தி பூச்சி', 'cause': 'பூச்சி', 'solution': 'அபாமெக்டின்', 'prevention': 'கண்காணிப்பு'},
-    'Tomato___Target_Spot': {'disease': 'தக்காளி இலக்கு புள்ளி', 'cause': 'பூஞ்சை', 'solution': 'பூஞ்சைக்கொல்லி', 'prevention': 'சுத்தம்'},
-    'Tomato___Tomato_Yellow_Leaf_Curl_Virus': {'disease': 'தக்காளி மஞ்சள் வைரஸ்', 'cause': 'வைரஸ்', 'solution': 'இமிடாக்லோப்ரிட்', 'prevention': 'வெள்ளை ஈ கட்டுப்பாடு'},
-    'Tomato___Tomato_mosaic_virus': {'disease': 'தக்காளி மொசைக் வைரஸ்', 'cause': 'வைரஸ்', 'solution': 'செடியை நீக்கவும்', 'prevention': 'சுத்தம்'},
-    'Tomato___healthy': {'disease': 'தக்காளி ஆரோக்கியமானது ✅', 'cause': 'இல்லை', 'solution': 'பராமரிப்பு', 'prevention': 'கண்காணிப்பு'}
+    'Tomato___Bacterial_spot': {
+        'disease': 'தக்காளி பாக்டீரியா புள்ளி நோய்',
+        'cause': 'சாந்தோமோனாஸ் பாக்டீரியா காரணமாக வருகிறது',
+        'solution': 'செம்பு சல்பேட் கரைசல் தெளிக்கவும்',
+        'prevention': 'நோயற்ற விதைகள் பயன்படுத்தவும்'
+    },
+    'Tomato___Early_blight': {
+        'disease': 'தக்காளி ஆரம்ப கருகல் நோய்',
+        'cause': 'ஆல்டர்னேரியா சோலானி பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'செம்பு அடிப்படையிலான பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'பயிர் சுழற்சி கடைப்பிடிக்கவும்'
+    },
+    'Tomato___Late_blight': {
+        'disease': 'தக்காளி தாமத கருகல் நோய்',
+        'cause': 'பைட்டோஃப்தோரா இன்ஃபெஸ்டன்ஸ் பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'மேன்கோசெப் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'நீர் தேங்காமல் வடிகால் ஏற்படுத்தவும்'
+    },
+    'Tomato___Leaf_Mold': {
+        'disease': 'தக்காளி இலை அச்சு நோய்',
+        'cause': 'க்ளாடோஸ்போரியம் பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'குளோரோதலோனில் பூஞ்சைக்கொல்லி பயன்படுத்தவும்',
+        'prevention': 'காற்றோட்டமான சூழ்நிலை பராமரிக்கவும்'
+    },
+    'Tomato___Septoria_leaf_spot': {
+        'disease': 'தக்காளி செப்டோரியா இலை புள்ளி நோய்',
+        'cause': 'செப்டோரியா லைக்கோபெர்சிசி பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'குளோரோதலோனில் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'கீழ் இலைகளை நீக்கி காற்றோட்டம் ஏற்படுத்தவும்'
+    },
+    'Tomato___Spider_mites Two-spotted_spider_mite': {
+        'disease': 'தக்காளி சிலந்தி பூச்சி நோய்',
+        'cause': 'டெட்ரானைக்கஸ் உர்டிகே பூச்சி காரணமாக வருகிறது',
+        'solution': 'அபாமெக்டின் பூச்சிக்கொல்லி தெளிக்கவும்',
+        'prevention': 'தாவரங்களை தொடர்ந்து கண்காணிக்கவும்'
+    },
+    'Tomato___Target_Spot': {
+        'disease': 'தக்காளி இலக்கு புள்ளி நோய்',
+        'cause': 'கோர்னஸ்போரா கேசிக்கோலா பூஞ்சை காரணமாக வருகிறது',
+        'solution': 'அசோக்ஸிஸ்ட்ரோபின் பூஞ்சைக்கொல்லி தெளிக்கவும்',
+        'prevention': 'பாதிக்கப்பட்ட இலைகளை அகற்றவும்'
+    },
+    'Tomato___Tomato_Yellow_Leaf_Curl_Virus': {
+        'disease': 'தக்காளி மஞ்சள் இலை சுருள் வைரஸ்',
+        'cause': 'வெள்ளை ஈ மூலம் பரவும் வைரஸ் காரணமாக வருகிறது',
+        'solution': 'இமிடாக்லோப்ரிட் பூச்சிக்கொல்லி தெளிக்கவும்',
+        'prevention': 'வெள்ளை ஈயை கட்டுப்படுத்தவும்'
+    },
+    'Tomato___Tomato_mosaic_virus': {
+        'disease': 'தக்காளி மொசைக் வைரஸ்',
+        'cause': 'டோபாமோவைரஸ் வைரஸ் காரணமாக வருகிறது',
+        'solution': 'பாதிக்கப்பட்ட செடிகளை அகற்றவும்',
+        'prevention': 'கருவிகளை கிருமிநாசினி மூலம் சுத்தம் செய்யவும்'
+    },
+    'Tomato___healthy': {
+        'disease': 'தக்காளி ஆரோக்கியமான இலை ✅',
+        'cause': 'நோய் எதுவும் இல்லை',
+        'solution': 'தொடர்ந்து கண்காணிக்கவும்',
+        'prevention': 'சரியான உரம் மற்றும் நீர் பராமரிக்கவும்'
+    },
 }
+
 
 @app.get('/')
 def health():
-    return {'status': 'Plant Disease API Live', 'classes': 38}
+    return {
+        'status': 'Plant Disease API Live! 🌿',
+        'version': '3.0.0',
+        'model': 'YOLOv8 ONNX + Gemini AI',
+        'classes': 38,
+        'language': 'Tamil'
+    }
 
-# --- ENDPOINT 1: YOLO PREDICTION WITH SMART MATCHING ---
+
 @app.post('/predict')
 async def predict(file: UploadFile = File(...)):
     contents = await file.read()
@@ -118,30 +340,31 @@ async def predict(file: UploadFile = File(...)):
 
     for r in results:
         for box in r.boxes:
-            raw_name = model.names[int(box.cls)] 
+            raw_name = model.names[int(box.cls)]
             confidence = round(float(box.conf) * 100, 2)
-            
-            # --- SMART MATCHING LOGIC ---
-            # 1. Direct match check
+
+            # Step 1: Direct match
             info = disease_solutions.get(raw_name)
-            
-            # 2. Fuzzy search if exact key is missed (e.g. 'Corn leaf blight')
+
+            # Step 2: Fuzzy match
             if not info:
-                search_term = raw_name.lower().replace('leaf', '').replace('s', '').strip()
+                search_term = raw_name.lower().replace(
+                    'leaf', '').replace('s', '').strip()
                 search_words = search_term.split()
-                
                 for key, data in disease_solutions.items():
-                    key_clean = key.lower().replace('___', ' ').replace('_', ' ')
-                    if all(word in key_clean for word in search_words):
+                    key_clean = key.lower().replace(
+                        '___', ' ').replace('_', ' ')
+                    if all(word in key_clean
+                           for word in search_words):
                         info = data
                         break
-            
-            # 3. Default Fallback
+
+            # Step 3: Default fallback
             if not info:
                 info = {
-                    'disease': raw_name.replace('_', ' '), 
-                    'cause': 'பூஞ்சை அல்லது வைரஸ் தொற்று', 
-                    'solution': 'சரியான பூஞ்சைக்கொல்லி தெளிக்கவும்', 
+                    'disease': raw_name.replace('_', ' '),
+                    'cause': 'பூஞ்சை அல்லது வைரஸ் தொற்று',
+                    'solution': 'சரியான பூஞ்சைக்கொல்லி தெளிக்கவும்',
                     'prevention': 'தோட்டத்தை சுத்தமாக வைத்திருங்கள்'
                 }
 
@@ -152,21 +375,36 @@ async def predict(file: UploadFile = File(...)):
                 'solution': info['solution'],
                 'prevention': info['prevention']
             })
+
     return {'detections': detections}
 
-# --- ENDPOINT 2: SMART AI FARMER CHAT ---
+
 @app.post('/chat')
-async def smart_farmer_chat(user_query: str = Body(..., embed=True)):
+async def smart_farmer_chat(
+        user_query: str = Body(..., embed=True)):
     try:
-        system_message = SystemMessage(content="You are expert AI Agricultural Assistant 'Zynixo Agri Bot'. Help farmers in Tamil and English (Thanglish).")
+        system_message = SystemMessage(
+            content=(
+                "நீ ஒரு AI விவசாய நிபுணன். "
+                "விவசாயிகளுக்கு தமிழிலும் ஆங்கிலத்திலும் "
+                "பதில் சொல்வாய். பயிர் நோய்கள், சிகிச்சை, "
+                "தடுப்பு முறைகள் பற்றி தெளிவாக விளக்குவாய்."
+            )
+        )
         user_message = HumanMessage(content=user_query)
         response = llm.invoke([system_message, user_message])
         return {"response": response.content}
     except Exception as e:
-        return {"response": "மன்னிக்கவும் நண்பா, Gemini இணைக்கப்படவில்லை. மீண்டும் முயற்சிக்கவும்."}
+        return {
+            "response": (
+                "மன்னிக்கவும் நண்பா, "
+                "Gemini இணைக்கப்படவில்லை. "
+                "மீண்டும் முயற்சிக்கவும்."
+            )
+        }
+
 
 if __name__ == '__main__':
     import uvicorn
-    # Hugging Face deployment uses port 7860
     port = int(os.environ.get('PORT', 7860))
     uvicorn.run(app, host='0.0.0.0', port=port)
