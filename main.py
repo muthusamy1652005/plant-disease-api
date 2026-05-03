@@ -26,7 +26,7 @@ model = YOLO('best.onnx', task='detect')
 # Gemini Setup
 api_key = os.getenv("GOOGLE_API_KEY")
 if not api_key:
-    api_key = "YOUR_GEMINI_API_KEY_HERE"
+    api_key = "AIzaSyAKZ0X98H9lbixD2lht31nI3BrTHhki2Gw"
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.0-flash",
