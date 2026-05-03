@@ -9,9 +9,9 @@ import os
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage, HumanMessage 
 
-app = FastAPI(title='Plant Disease Detection & Smart AI Farmer')
+app = FastAPI(title='Zynixo Agri-AI Backend')
 
-# CORS setup for Flutter (Public Access)
+# CORS setup for Flutter
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],
@@ -19,13 +19,13 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-# Load YOLOv8 model
+# Load YOLOv8 model (Ensure best.onnx is in the same folder)
 model = YOLO('best.onnx', task='detect')
 
 # --- GEMINI SETUP (SECURE) ---
 api_key = os.getenv("GOOGLE_API_KEY")
 
-# Fallback only for testing
+# Fallback API Key (Only if Environment Secret is not set)
 if not api_key:
     api_key = "AIzaSyDvzFrw8u0svtyrVPeO5Ck1vao8kryjJe4"
 
@@ -108,6 +108,7 @@ disease_solutions = {
 def health():
     return {'status': 'Plant Disease API Live', 'classes': 38}
 
+# --- ENDPOINT 1: YOLO PREDICTION WITH SMART MATCHING ---
 @app.post('/predict')
 async def predict(file: UploadFile = File(...)):
     contents = await file.read()
@@ -120,16 +121,29 @@ async def predict(file: UploadFile = File(...)):
             raw_name = model.names[int(box.cls)] 
             confidence = round(float(box.conf) * 100, 2)
             
+            # --- SMART MATCHING LOGIC ---
+            # 1. Direct match check
             info = disease_solutions.get(raw_name)
+            
+            # 2. Fuzzy search if exact key is missed (e.g. 'Corn leaf blight')
             if not info:
-                # Fuzzy matching search if exact key is missed
+                search_term = raw_name.lower().replace('leaf', '').replace('s', '').strip()
+                search_words = search_term.split()
+                
                 for key, data in disease_solutions.items():
-                    if raw_name.lower() in key.lower():
+                    key_clean = key.lower().replace('___', ' ').replace('_', ' ')
+                    if all(word in key_clean for word in search_words):
                         info = data
                         break
             
+            # 3. Default Fallback
             if not info:
-                info = {'disease': raw_name, 'cause': 'தெரியவில்லை', 'solution': 'நிபுணரை அணுகவும்', 'prevention': 'கண்காணிப்பு'}
+                info = {
+                    'disease': raw_name.replace('_', ' '), 
+                    'cause': 'பூஞ்சை அல்லது வைரஸ் தொற்று', 
+                    'solution': 'சரியான பூஞ்சைக்கொல்லி தெளிக்கவும்', 
+                    'prevention': 'தோட்டத்தை சுத்தமாக வைத்திருங்கள்'
+                }
 
             detections.append({
                 'disease_name': info['disease'],
@@ -140,17 +154,19 @@ async def predict(file: UploadFile = File(...)):
             })
     return {'detections': detections}
 
+# --- ENDPOINT 2: SMART AI FARMER CHAT ---
 @app.post('/chat')
 async def smart_farmer_chat(user_query: str = Body(..., embed=True)):
     try:
-        system_message = SystemMessage(content="You are expert AI Agricultural Assistant 'Zynixo Agri Bot'. Help farmers in Tamil and English.")
+        system_message = SystemMessage(content="You are expert AI Agricultural Assistant 'Zynixo Agri Bot'. Help farmers in Tamil and English (Thanglish).")
         user_message = HumanMessage(content=user_query)
         response = llm.invoke([system_message, user_message])
         return {"response": response.content}
     except Exception as e:
-        return {"response": "Sorry nanba, Gemini connect aagala. Madiyum try pannunga."}
+        return {"response": "மன்னிக்கவும் நண்பா, Gemini இணைக்கப்படவில்லை. மீண்டும் முயற்சிக்கவும்."}
 
 if __name__ == '__main__':
     import uvicorn
+    # Hugging Face deployment uses port 7860
     port = int(os.environ.get('PORT', 7860))
     uvicorn.run(app, host='0.0.0.0', port=port)
