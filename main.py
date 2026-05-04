@@ -29,7 +29,7 @@ if not api_key:
     api_key = "AIzaSyCdnRPf6HS6Q08ujMrmO_F0qoJC9isQ9F0"  # Replace with your actual API key or set as environment variable
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
+    model="gemini-1.5-flash",
     google_api_key=api_key,
     temperature=0.7
 )
